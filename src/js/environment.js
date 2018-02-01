@@ -172,14 +172,15 @@ function scene2_models() {
     }
 
 
-    let plane = loadPlane();
-    plane.shift = [0, -1, 0];
-    plane.animate = function() {};
-    plane.updateMVMatrix = function(mvMatrix) {
-        mat4.translate(mvMatrix, this.shift);
-    };
-    plane.specularColor = [0, 0, 0];
-    models.push(plane);
+    // todo вернуть это и сделать новую функцию для третьей сцены
+    // let plane = loadPlane();
+    // plane.shift = [0, -1, 0];
+    // plane.animate = function() {};
+    // plane.updateMVMatrix = function(mvMatrix) {
+    //     mat4.translate(mvMatrix, this.shift);
+    // };
+    // plane.specularColor = [0, 0, 0];
+    // models.push(plane);
     return models;
 }
 

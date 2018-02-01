@@ -4,6 +4,7 @@ let env;
 let renderer;
 let deferredRenderer;
 let forwardRenderer;
+let parallaxRenderer;
 let renderLayer;
 
 function initBuffers(model) {
@@ -24,6 +25,12 @@ function initBuffers(model) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.normals.data), gl.STATIC_DRAW);
     model.normalsBuffer.itemSize = model.normals.itemSize;
     model.normalsBuffer.numItems = model.normals.numItems;
+
+    model.texcoordsBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, model.texcoordsBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.texcoords.data), gl.STATIC_DRAW);
+    model.texcoordsBuffer.itemSize = model.texcoords.itemSize;
+    model.texcoordsBuffer.numItems = model.texcoords.numItems;
 }
 
 function initHandlers() {
@@ -151,8 +158,10 @@ function webGLStart() {
     gl = initGL();
     geometry = loadGeometry();
     env = loadEnvironment();
-    renderer = deferredRenderer = new DeferredRenderingStrategy(gl);
+    deferredRenderer = new DeferredRenderingStrategy(gl);
     forwardRenderer = new ForwardRenderingStrategy(gl);
+    parallaxRenderer = new ParallaxRenderingStrategy(gl);
+    renderer = parallaxRenderer;
 
     renderLayer = 0;
 

@@ -198,8 +198,63 @@ function loadPlane() {
     return result;
 }
 
+function buildModelFromFaces(faces) {
+    function getVertices() {
+        var vertices = [].concat.apply([], faces);
+        return vertices;
+    }
+
+    function getNormals() {
+        var normalsPerFace = faces.map(function (f) {return getNormalForFace(f)});
+        console.dir(faces);
+        var normals = [];
+        normalsPerFace.forEach(function (value) {
+            var untyped = Array.prototype.slice.call(value);
+            normals = normals.concat(untyped);
+            normals = normals.concat(untyped);
+            normals = normals.concat(untyped);
+        });
+        console.dir(normals);
+        return normals;
+    }
+
+    function getColors() {
+        var colors = [];
+        for (var i = 0; i < 3; i++) {
+            colors = colors.concat([1, 1, 1, 1])
+        }
+        return colors;
+    }
+
+
+    var verticesData = getVertices();
+    var normalsData = getNormals();
+    var colorsData = getColors();
+
+    var result = {
+        vertices: {
+            data: verticesData,
+            itemSize: 3,
+            numItems: verticesData.length / 3
+        },
+        normals: {
+            data: normalsData,
+            itemSize: 3,
+            numItems: normalsData.length / 3
+        },
+        colors: {
+            data: colorsData,
+            itemSize: 4,
+            numItems: colorsData.length / 4
+        }
+    };
+
+    return result;
+}
+
 function loadBunny(color) {
-    return loadMeshFromFileName("/models/bunny_normals_simplified_level2.obj", color);
+    // return loadMeshFromFileName("/models/bunny_normals_simplified_level2.obj", color);
+    return loadCube(color);
 }
 
 function loadFile(fileName) {
@@ -219,6 +274,10 @@ function loadFile(fileName) {
     throw "failed to load file!";
 }
 
+function loadCube(color) {
+    return loadMeshFromFileName("/models/cube.obj", color);
+}
+
 
 function loadMeshFromFileName(filename, color) {
     var data = loadFile(filename);
@@ -230,9 +289,11 @@ function loadMeshFromFileName(filename, color) {
 function loadMeshFromString(string, color) {
     var lines = string.split("\n");
     var verticesUnique = [];
+    var texcoordsUnique = [];
     var normalsUnique = [];
     var vertices = [];
     var normals = [];
+    var texcoords = [];
 
     var minx = Number.POSITIVE_INFINITY;
     var miny = Number.POSITIVE_INFINITY;
@@ -265,28 +326,49 @@ function loadMeshFromString(string, color) {
                             parseFloat(parts[3])
                         ]);
                     break;
+                case 'vt':
+                    texcoordsUnique.push(
+                        [
+                            parseFloat(parts[1]),
+                            parseFloat(parts[2])
+                        ]
+                    );
+                    break;
                 case 'f': {
                     var f1 = parts[1].split('/');
                     var f2 = parts[2].split('/');
                     var f3 = parts[3].split('/');
+                    ////////////////////
                     Array.prototype.push.apply(
                         vertices, verticesUnique[parseInt(f1[0]) - 1]
                     );
                     Array.prototype.push.apply(
+                        texcoords, texcoordsUnique[parseInt(f1[1]) - 1]
+                    );
+                    Array.prototype.push.apply(
                         normals, normalsUnique[parseInt(f1[2]) - 1]
                     );
+                    ////////////////////
                     Array.prototype.push.apply(
                         vertices, verticesUnique[parseInt(f2[0]) - 1]
                     );
                     Array.prototype.push.apply(
+                        texcoords, texcoordsUnique[parseInt(f2[1]) - 1]
+                    );
+                    Array.prototype.push.apply(
                         normals, normalsUnique[parseInt(f2[2]) - 1]
                     );
+                    ////////////////////
                     Array.prototype.push.apply(
                         vertices, verticesUnique[parseInt(f3[0]) - 1]
                     );
                     Array.prototype.push.apply(
+                        texcoords, texcoordsUnique[parseInt(f3[1]) - 1]
+                    );
+                    Array.prototype.push.apply(
                         normals, normalsUnique[parseInt(f3[2]) - 1]
                     );
+                    /////////////////////
                     break;
                 }
             }
@@ -296,17 +378,19 @@ function loadMeshFromString(string, color) {
     console.log("Loaded mesh with " + vertexCount + " vertices");
 
     if (normals.length / 3 !== vertexCount) {
-        // TODO поправить, не работает
-        if (normals.length === 0) {
-            for (var i = 0; i < vertices.length; i += 9) {
-                var normal = getNormalForFace(vertices.slice(i * 9, (i + 1) * 9));
-                normals.push.apply(normals, normal);
-                normals.push.apply(normals, normal);
-                normals.push.apply(normals, normal);
-            }
-        } else {
-            throw "invalid normals count!";
-        }
+        alert('normals not supplied, not able to load model');
+        throw 'error: normals not supplied, not able to load model';
+        // // TODO поправить, не работает
+        // if (normals.length === 0) {
+        //     for (var i = 0; i < vertices.length; i += 9) {
+        //         var normal = getNormalForFace(vertices.slice(i * 9, (i + 1) * 9));
+        //         normals.push.apply(normals, normal);
+        //         normals.push.apply(normals, normal);
+        //         normals.push.apply(normals, normal);
+        //     }
+        // } else {
+        //     throw "invalid normals count!";
+        // }
     }
 
     var colors = [];
@@ -321,6 +405,11 @@ function loadMeshFromString(string, color) {
             data: vertices,
             itemSize: 3,
             numItems: vertices.length / 3
+        },
+        texcoords: {
+            data: texcoords,
+            itemSize: 2,
+            numItems: texcoords.length / 2
         },
         normals: {
             data: normals,
