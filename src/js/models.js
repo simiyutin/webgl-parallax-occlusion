@@ -275,7 +275,107 @@ function loadFile(fileName) {
 }
 
 function loadCube(color) {
-    return loadMeshFromFileName("/models/cube.obj", color);
+    function computeTangents(model) {
+        const vertices = model.vertices.data;
+        const texcoords = model.texcoords.data;
+        if (vertices.length / 3 !== texcoords.length / 2) {
+            throw 'lolwut';
+        }
+
+        model.tangents = {
+            data: [],
+            itemSize: 3,
+            numItems: vertices.length / 3
+        };
+
+        model.bitangents = {
+            data: [],
+            itemSize: 3,
+            numItems: vertices.length / 3
+        };
+
+        // для каждого фейса
+        for (let i = 0, j = 0; i < vertices.length; i += 3 * 3, j += 2 * 3) {
+            const pxa = vertices[i + 0];
+            const pya = vertices[i + 1];
+            const pza = vertices[i + 2];
+            const pxb = vertices[i + 3];
+            const pyb = vertices[i + 4];
+            const pzb = vertices[i + 5];
+            const pxc = vertices[i + 6];
+            const pyc = vertices[i + 7];
+            const pzc = vertices[i + 8];
+
+            const pa = vec3.create([pxa, pya, pza]);
+            const pb = vec3.create([pxb, pyb, pzb]);
+            const pc = vec3.create([pxc, pyc, pzc]);
+
+            const q1 = vec3.create();
+            vec3.subtract(pb, pa, q1);
+
+            const q2 = vec3.create();
+            vec3.subtract(pc, pa, q2);
+
+            const tua = texcoords[j + 0];
+            const tva = texcoords[j + 1];
+            const tub = texcoords[j + 2];
+            const tvb = texcoords[j + 3];
+            const tuc = texcoords[j + 4];
+            const tvc = texcoords[j + 5];
+
+            const ta = vec3.create([tua, tva, 0]);
+            const tb = vec3.create([tub, tvb, 0]);
+            const tc = vec3.create([tuc, tvc, 0]);
+
+            const w1 = vec3.create();
+            vec3.subtract(tb, ta, w1);
+
+            const w2 = vec3.create();
+            vec3.subtract(tc, ta, w2);
+
+            const s1 = w1[0];
+            const t1 = w1[1];
+            const s2 = w2[0];
+            const t2 = w2[1];
+
+            const denominator = s1 * t2 - s2 * t1;
+
+            const scale = vec3.create([1/denominator, 1/denominator, 1/denominator]);
+
+            const inv = mat4.create([
+                t2 ,-t1,  0, 0,
+                -s2,  s1 , 0, 0,
+                0  , 0  , 0, 0,
+                0, 0, 0, 0
+            ]);
+
+            const pos = mat4.create([
+                q1[0], q1[1], q1[2], 0,
+                q2[0], q2[1], q2[2], 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0
+            ]);
+
+            const res = mat4.create();
+            mat4.multiply(pos, inv, res);
+            mat4.scale(res, scale);
+
+            const T = [res[0], res[1], res[2]];
+            const B = [res[4], res[5], res[6]];
+
+            console.log(`T = ${T}`);
+            console.log(`B = ${B}`);
+
+            for (let k = 0; k < 3; ++k) {
+                Array.prototype.push.apply(model.tangents.data, T);
+                Array.prototype.push.apply(model.bitangents.data, B);
+            }
+        }
+    }
+
+    const model = loadMeshFromFileName("/models/cube.obj", color);
+    computeTangents(model);
+    return model;
 }
 
 
