@@ -54,57 +54,51 @@ float lerp(float a, float b, float coef) {
 }
 
 vec2 getCorrectedTexcoords() {
-    float fHeightMapScale = 0.1;
-    float fParallaxLimit = -length(vEye.xy) / vEye.z;
-    fParallaxLimit *= fHeightMapScale;
+    vec2 texcoord = vTexcoord;
 
-    vec2 vOffsetDir = normalize(vEye.xy);
-    vec2 vMaxOffset = vOffsetDir * fParallaxLimit;
+    const float heightScale = 0.1;
+    const float maxSamples = 100.0;
+    const float minSamples = 50.0;
 
-    const float nMaxSamples = 100.0;
-    const float nMinSamples = 50.0;
-    int nNumSamples = int(lerp(nMaxSamples, nMinSamples, dot(vEye, vNormal)));
+    float parallaxLimit = -length(vEye.xy) / vEye.z;
+    parallaxLimit *= heightScale;
 
-    float fStepSize = 1.0 / float(nNumSamples);
+    vec2 offsetDir = normalize(vEye.xy);
+    vec2 maxOffset = offsetDir * parallaxLimit;
 
-    vec2 dx = dFdx(vTexcoord);
-    vec2 dy = dFdy(vTexcoord);
+    int numSamples = int(lerp(maxSamples, minSamples, dot(vEye, vNormal)));
+    float step = 1.0 / float(numSamples);
 
-    float fCurrRayHeight = 1.0;
-    vec2 vCurrOffset = vec2(0.0, 0.0);
-    vec2 vLastOffset = vec2(0.0, 0.0);
-    float fLastSampledHeight = 1.0;
-    float fCurrSampledHeight = 1.0;
+    float currRayHeight = 1.0;
+    vec2 currOffset = vec2(0.0, 0.0);
+    vec2 prevOffset = vec2(0.0, 0.0);
+    float lastSampledHeight = 1.0;
+    float currSampledHeight = 1.0;
 
-    for (int nCurrSample = 0; nCurrSample < int(nMaxSamples); ++nCurrSample) {
-        if (nCurrSample >= nNumSamples) {
+    vec2 dx = dFdx(texcoord);
+    vec2 dy = dFdy(texcoord);
+
+    for (int i = 0; i < int(maxSamples); ++i) {
+        if (i >= numSamples) {
             break;
         }
 
-        fCurrSampledHeight = texture2DGradEXT(uDepthSampler, vTexcoord + vCurrOffset, dx, dy).r;
-        if (fCurrSampledHeight > fCurrRayHeight) {
-
-            float delta1 = fCurrSampledHeight - fCurrRayHeight;
-            float delta2 = (fCurrRayHeight + fStepSize) - fLastSampledHeight;
-
+        currSampledHeight = 1.0 - texture2DGradEXT(uDepthSampler, texcoord + currOffset, dx, dy).r;
+        if (currSampledHeight > currRayHeight) {
+            float delta1 = currSampledHeight - currRayHeight;
+            float delta2 = (currRayHeight + step) - lastSampledHeight;
             float ratio = delta1 / (delta1 + delta2);
-
-            vCurrOffset = ratio * vLastOffset + (1.0 - ratio) * vCurrOffset;
-
+            currOffset = ratio * prevOffset + (1.0 - ratio) * currOffset;
             break;
-
         } else {
-
-            fCurrRayHeight -= fStepSize;
-
-            vLastOffset = vCurrOffset;
-            vCurrOffset += fStepSize * vMaxOffset;
-
-            fLastSampledHeight = fCurrSampledHeight;
+            currRayHeight -= step;
+            lastSampledHeight = currSampledHeight;
+            prevOffset = currOffset;
+            currOffset += step * maxOffset;
         }
     }
 
-    return vTexcoord + vCurrOffset;
+    return texcoord + currOffset;
 }
 
 void main() {
