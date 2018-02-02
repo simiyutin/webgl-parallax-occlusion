@@ -85,6 +85,7 @@ vec2 getCorrectedTexcoords() {
 
         currSampledHeight = 1.0 - texture2DGradEXT(uDepthSampler, texcoord + currOffset, dx, dy).r;
         if (currSampledHeight > currRayHeight) {
+            // find point of intersection
             float delta1 = currSampledHeight - currRayHeight;
             float delta2 = (currRayHeight + step) - lastSampledHeight;
             float ratio = delta1 / (delta1 + delta2);
@@ -99,6 +100,10 @@ vec2 getCorrectedTexcoords() {
     }
 
     return texcoord + currOffset;
+}
+
+vec2 getCorrectedTexCoordsConeMap() {
+    return vec2(0.0, 0.0);
 }
 
 void main() {
