@@ -1,3 +1,5 @@
+#extension GL_OES_standard_derivatives : enable
+
 precision mediump float;
 
 uniform vec3 uAmbientColor;
@@ -49,4 +51,7 @@ void main() {
 //    vec3 normal = normalize(vNormal);
     vec3 normal = normalize(col2vec(texture2D(uNormalSampler, vTexcoord).xyz));
     gl_FragColor = vec4(getLightAmbient(color.rgb) + getLightDirectional(normal, color.rgb), 1.0);
+
+    vec2 dx = dFdx(vTexcoord);
+    vec2 dy = dFdy(vTexcoord);
 }

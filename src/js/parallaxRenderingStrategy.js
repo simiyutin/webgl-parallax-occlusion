@@ -1,6 +1,9 @@
 class ParallaxRenderingStrategy {
     constructor(gl) {
         this.gl = gl;
+        if (!gl.getExtension('OES_standard_derivatives')) {
+            throw "error: extension cannot be loaded";
+        }
         this.mainProgram = null;
         this.initProgram('main');
         this.colorTexture = this.loadTexture('color');
