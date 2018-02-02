@@ -1,6 +1,5 @@
 precision mediump float;
 
-uniform vec3 uLightDir;
 uniform vec3 uAmbientColor;
 uniform vec3 uSpecularColor;
 uniform sampler2D uColorSampler;
@@ -10,6 +9,7 @@ uniform sampler2D uNormalSampler;
 varying vec2 vTexcoord;
 varying vec3 vPosition;
 varying vec3 vNormal;
+varying vec3 vLightDir;
 
 const vec3 BLACK_RGB = vec3(0.0, 0.0, 0.0);
 const vec4 BLACK_RGBA = vec4(0.0, 0.0, 0.0, 1.0);
@@ -18,7 +18,7 @@ const vec4 GREEN_RGBA = vec4(0.0, 1.0, 0.0, 1.0);
 const vec4 BLUE_RGBA = vec4(0.0, 0.0, 1.0, 1.0);
 
 vec3 getLightDirectional(vec3 normal, vec3 color) {
-    vec3 lightDir = uLightDir;
+    vec3 lightDir = vLightDir;
     float lambertian = max(dot(lightDir, normal), 0.0);
     float specular = 0.0;
 
@@ -46,7 +46,7 @@ vec3 col2vec(vec3 c) {
 
 void main() {
     vec4 color = texture2D(uColorSampler, vTexcoord);
-    vec3 normal = normalize(vNormal);
-//    vec3 normal = normalize(col2vec(texture2D(uNormalSampler, vTexcoord).xyz));
+//    vec3 normal = normalize(vNormal);
+    vec3 normal = normalize(col2vec(texture2D(uNormalSampler, vTexcoord).xyz));
     gl_FragColor = vec4(getLightAmbient(color.rgb) + getLightDirectional(normal, color.rgb), 1.0);
 }

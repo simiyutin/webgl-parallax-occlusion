@@ -58,6 +58,18 @@ class ParallaxRenderingStrategy {
                 gl.vertexAttribPointer(mainProgram.aVertexNormal, model.normalsBuffer.itemSize, gl.FLOAT, false, 0, 0);
             }
 
+            gl.bindBuffer(gl.ARRAY_BUFFER, model.tangentsBuffer);
+            if (mainProgram.aVertexTangent !== -1) {
+                gl.enableVertexAttribArray(mainProgram.aVertexTangent);
+                gl.vertexAttribPointer(mainProgram.aVertexTangent, model.tangentsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            }
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, model.bitangentsBuffer);
+            if (mainProgram.aVertexBiTangent !== -1) {
+                gl.enableVertexAttribArray(mainProgram.aVertexBiTangent);
+                gl.vertexAttribPointer(mainProgram.aVertexBiTangent, model.bitangentsBuffer.itemSize, gl.FLOAT, false, 0, 0);
+            }
+
             // vertex
             gl.uniformMatrix4fv(mainProgram.uPMatrix, false, geometry.getPMatrix());
             gl.uniformMatrix4fv(mainProgram.uMVMatrix, false, mvMatrixCopy);
@@ -141,6 +153,8 @@ class ParallaxRenderingStrategy {
         program.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition");
         program.aVertexTexcoord = gl.getAttribLocation(program, "aVertexTexcoord");
         program.aVertexNormal = gl.getAttribLocation(program, "aVertexNormal");
+        program.aVertexTangent = gl.getAttribLocation(program, "aVertexTangent");
+        program.aVertexBiTangent = gl.getAttribLocation(program, "aVertexBiTangent");
 
         program.uMVMatrix = gl.getUniformLocation(program, "uMVMatrix");
         program.uPMatrix = gl.getUniformLocation(program, "uPMatrix");

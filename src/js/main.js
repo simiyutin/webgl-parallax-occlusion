@@ -31,6 +31,22 @@ function initBuffers(model) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.texcoords.data), gl.STATIC_DRAW);
     model.texcoordsBuffer.itemSize = model.texcoords.itemSize;
     model.texcoordsBuffer.numItems = model.texcoords.numItems;
+
+    if (model.tangents) {
+        model.tangentsBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, model.tangentsBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.tangents.data), gl.STATIC_DRAW);
+        model.tangentsBuffer.itemSize = model.tangents.itemSize;
+        model.tangentsBuffer.numItems = model.tangents.numItems;
+    }
+
+    if (model.bitangents) {
+        model.bitangentsBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, model.bitangentsBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(model.bitangents.data), gl.STATIC_DRAW);
+        model.bitangentsBuffer.itemSize = model.bitangents.itemSize;
+        model.bitangentsBuffer.numItems = model.bitangents.numItems;
+    }
 }
 
 function initHandlers() {
