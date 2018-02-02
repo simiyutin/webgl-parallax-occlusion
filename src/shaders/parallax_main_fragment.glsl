@@ -78,8 +78,8 @@ vec2 getCorrectedTexcoords() {
     vec3 normal = normalize(vNormal);
 
     const float heightScale = 0.1;
-    const float maxSamples = 100.0;
-    const float minSamples = 50.0;
+    const float maxSamples = 256.0;
+    const float minSamples = 256.0;
 
     float z = abs(eye.z);
     float iz = sqrt(1.0 - z * z);
@@ -132,8 +132,8 @@ vec2 getCorrectedTexcoordsConeMap() {
     vec3 normal = normalize(vNormal);
 
     const float heightScale = 0.1;
-    const float maxSamples = 100.0;
-    const float minSamples = 50.0;
+    const float maxSamples = 256.0;
+    const float minSamples = 256.0;
 
     float z = abs(eye.z);
     float iz = sqrt(1.0 - z * z);

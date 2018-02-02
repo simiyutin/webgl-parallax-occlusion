@@ -157,8 +157,8 @@ function scene1_lights() {
     return getConcentricPositions(10, 10, 1);
 }
 
-const cube = 14;
-const num = 4;
+const cube = 20;
+const num = 10;
 
 function scene2_models() {
     const models = [];
