@@ -6,9 +6,10 @@ class ParallaxRenderingStrategy {
         }
         this.mainProgram = null;
         this.initProgram('main');
-        this.colorTexture = this.loadTexture('color');
-        this.depthTexture = this.loadTexture('depth');
-        this.normalsTexture = this.loadTexture('normals');
+        this.colorTexture = this.loadTexture('color.jpg');
+        this.depthTexture = this.loadTexture('depth.jpg');
+        this.normalsTexture = this.loadTexture('step.jpg');
+        // this.normalsTexture = this.loadTexture('normals.jpg');
     }
 
     // region interface
@@ -120,6 +121,7 @@ class ParallaxRenderingStrategy {
         const image = new Image();
         image.onload = function() {
             gl.bindTexture(gl.TEXTURE_2D, texture);
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
             gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
                 srcFormat, srcType, image);
 
@@ -127,9 +129,9 @@ class ParallaxRenderingStrategy {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
         };
-        image.src = `http://localhost:8000/textures/${name}.jpg`;
+        image.src = `http://localhost:8000/textures/${name}`;
 
         return texture;
     };

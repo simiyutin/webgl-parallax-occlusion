@@ -77,7 +77,7 @@ function initHandlers() {
         console.dir(e.keyCode);
         e = e || window.event;
 
-        const translationDelta = 0.1;
+        const translationDelta = 0.4;
 
         if (e.keyCode === 38) {
             // up arrow

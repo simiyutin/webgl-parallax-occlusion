@@ -363,8 +363,8 @@ function loadCube(color) {
             const T = [res[0], res[1], res[2]];
             const B = [res[4], res[5], res[6]];
 
-            console.log(`T = ${T}`);
-            console.log(`B = ${B}`);
+            // console.log(`T = ${T}`);
+            // console.log(`B = ${B}`);
 
             for (let k = 0; k < 3; ++k) {
                 Array.prototype.push.apply(model.tangents.data, T);
