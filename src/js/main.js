@@ -77,6 +77,8 @@ function initHandlers() {
         console.dir(e.keyCode);
         e = e || window.event;
 
+        const translationDelta = 0.1;
+
         if (e.keyCode === 38) {
             // up arrow
             geometry.rotateCamera(0, -1);
@@ -95,27 +97,27 @@ function initHandlers() {
         }
         else if (e.keyCode === 87) {
             // w key
-            geometry.translateCamera([0, 0, -1]);
+            geometry.translateCamera([0, 0, -translationDelta]);
         }
         else if (e.keyCode === 83) {
             // s key
-            geometry.translateCamera([0, 0, 1]);
+            geometry.translateCamera([0, 0, translationDelta]);
         }
         else if (e.keyCode === 68) {
             // d key
-            geometry.translateCamera([1, 0, 0]);
+            geometry.translateCamera([translationDelta, 0, 0]);
         }
         else if (e.keyCode === 65) {
             // a key
-            geometry.translateCamera([-1, 0, 0]);
+            geometry.translateCamera([-translationDelta, 0, 0]);
         }
         else if (e.keyCode === 82) {
             // r key
-            geometry.translateCamera([0, 1, 0]);
+            geometry.translateCamera([0, translationDelta, 0]);
         }
         else if (e.keyCode === 70) {
             // f key
-            geometry.translateCamera([0, -1, 0]);
+            geometry.translateCamera([0, -translationDelta, 0]);
         }
         else if (e.keyCode === 71) {
             // g key

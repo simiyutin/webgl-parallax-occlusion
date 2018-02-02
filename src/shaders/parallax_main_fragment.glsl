@@ -103,7 +103,7 @@ vec2 getCorrectedTexcoords() {
             fLastSampledHeight = fCurrSampledHeight;
         }
     }
-    
+
     return vTexcoord + vCurrOffset;
 }
 
