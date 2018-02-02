@@ -8,7 +8,7 @@ class ParallaxRenderingStrategy {
         this.initProgram('main');
         this.colorTexture = this.loadTexture('color.jpg');
         this.depthTexture = this.loadTexture('depth.jpg');
-        this.normalsTexture = this.loadTexture('step.jpg');
+        this.normalsTexture = this.loadTexture('step.png');
         // this.normalsTexture = this.loadTexture('normals.jpg');
     }
 

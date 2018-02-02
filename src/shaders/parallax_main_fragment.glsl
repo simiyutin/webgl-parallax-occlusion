@@ -81,8 +81,10 @@ vec2 getCorrectedTexcoords() {
     const float maxSamples = 100.0;
     const float minSamples = 50.0;
 
-    float parallaxLimit = -length(eye.xy) / eye.z;
-    parallaxLimit *= heightScale;
+    float z = abs(eye.z);
+    float iz = sqrt(1.0 - z * z);
+
+    float parallaxLimit = iz / z * heightScale;
 
     vec2 offsetDir = normalize(eye.xy);
     vec2 maxOffset = offsetDir * parallaxLimit;
@@ -90,10 +92,10 @@ vec2 getCorrectedTexcoords() {
     int numSamples = int(lerp(maxSamples, minSamples, dot(eye, normal)));
     float step = 1.0 / float(numSamples);
 
-    float currRayHeight = 1.0;
     vec2 currOffset = vec2(0.0, 0.0);
     vec2 prevOffset = vec2(0.0, 0.0);
-    float lastSampledHeight = 1.0;
+    float currRayHeight = 1.0;
+    float prevSampledHeight = 1.0;
     float currSampledHeight = 1.0;
 
     vec2 dx = dFdx(texcoord);
@@ -103,20 +105,21 @@ vec2 getCorrectedTexcoords() {
         if (i >= numSamples) {
             break;
         }
-
         currSampledHeight = transformDepth(texture2DGradEXT(uDepthSampler, texcoord + currOffset, dx, dy).r);
-        if (currSampledHeight > currRayHeight) {
-            // find point of intersection
+        if (currSampledHeight < currRayHeight) {
+            currRayHeight -= step;
+
+            prevOffset = currOffset;
+            currOffset += step * maxOffset;
+
+            prevSampledHeight = currSampledHeight;
+        } else {
+            // find precise point of intersection
             float delta1 = currSampledHeight - currRayHeight;
-            float delta2 = (currRayHeight + step) - lastSampledHeight;
+            float delta2 = (currRayHeight + step) - prevSampledHeight;
             float ratio = delta1 / (delta1 + delta2);
             currOffset = ratio * prevOffset + (1.0 - ratio) * currOffset;
             break;
-        } else {
-            currRayHeight -= step;
-            lastSampledHeight = currSampledHeight;
-            prevOffset = currOffset;
-            currOffset += step * maxOffset;
         }
     }
 
@@ -132,52 +135,53 @@ vec2 getCorrectedTexcoordsConeMap() {
     const float maxSamples = 100.0;
     const float minSamples = 50.0;
 
-    float parallaxLimit = -length(eye.xy) / eye.z;
-    parallaxLimit *= heightScale;
+    float z = abs(eye.z);
+    float iz = sqrt(1.0 - z * z);
+
+    float parallaxLimit = iz / z * heightScale;
 
     vec2 offsetDir = normalize(eye.xy);
     vec2 maxOffset = offsetDir * parallaxLimit;
 
     int numSamples = int(lerp(maxSamples, minSamples, dot(eye, normal)));
-    float step = 1.0 / float(numSamples);
+    float minStep = 1.0 / float(numSamples);
 
-    float currRayHeight = 1.0;
     vec2 currOffset = vec2(0.0, 0.0);
     vec2 prevOffset = vec2(0.0, 0.0);
-    float lastSampledHeight = 1.0;
+    float prevRayHeight = 1.0;
+    float currRayHeight = 1.0;
+    float prevSampledHeight = 1.0;
     float currSampledHeight = 1.0;
 
     vec2 dx = dFdx(texcoord);
     vec2 dy = dFdy(texcoord);
 
-    float z = abs(eye.z);
-    float iz = sqrt(1.0 - z * z);
-
     for (int i = 0; i < int(maxSamples); ++i) {
         if (i >= numSamples) {
             break;
         }
-
         currSampledHeight = transformDepth(texture2DGradEXT(uDepthSampler, texcoord + currOffset, dx, dy).r);
-//        stepRatio = 0;
+        if (currSampledHeight < currRayHeight) {
+            float coneRatioSqrt = texture2DGradEXT(uNormalSampler, texcoord + currOffset, dx, dy).r;
+            float coneRatio = coneRatioSqrt * coneRatioSqrt;
+            float stepRatio = (currRayHeight - currSampledHeight) / (iz / coneRatio - z);
 
-        if (currSampledHeight > currRayHeight) {
-            // find point of intersection
+            prevRayHeight = currRayHeight;
+            currRayHeight -= minStep;
+            currRayHeight -= z * stepRatio;
+
+            prevOffset = currOffset;
+            currOffset += minStep * maxOffset;
+            currOffset += eye.xy * stepRatio;
+
+            prevSampledHeight = currSampledHeight;
+        } else {
+            // find precise point of intersection
             float delta1 = currSampledHeight - currRayHeight;
-            float delta2 = (currRayHeight + step) - lastSampledHeight;
+            float delta2 = prevRayHeight - prevSampledHeight;
             float ratio = delta1 / (delta1 + delta2);
             currOffset = ratio * prevOffset + (1.0 - ratio) * currOffset;
             break;
-        } else {
-            float coneRatio = texture2DGradEXT(uNormalSampler, texcoord + currOffset, dx, dy).g;
-            coneRatio *= coneRatio; // stored is sqrt
-            float stepRatio = 1.0 / (iz / coneRatio - z);
-            step = stepRatio * z;
-
-            currRayHeight -= step;
-            lastSampledHeight = currSampledHeight;
-            prevOffset = currOffset;
-            currOffset += stepRatio * iz;
         }
     }
 
@@ -185,8 +189,9 @@ vec2 getCorrectedTexcoordsConeMap() {
 }
 
 void main() {
-    vec2 correctedTexcoords = getCorrectedTexcoords();
-//    vec2 correctedTexcoords = getCorrectedTexcoordsConeMap();
+//    vec2 correctedTexcoords = getCorrectedTexcoords();
+    vec2 correctedTexcoords = getCorrectedTexcoordsConeMap();
+//    vec4 color = vec4(vNormal, 1.0);
     vec4 color = texture2D(uColorSampler, correctedTexcoords);
     vec3 normal = mapNormal(correctedTexcoords);
 //    vec3 normal = normalize(col2vec(texture2D(uNormalSampler, correctedTexcoords).xyz));
