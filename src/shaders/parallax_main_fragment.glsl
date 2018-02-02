@@ -162,7 +162,7 @@ vec2 getCorrectedTexcoordsConeMap() {
         }
         currSampledHeight = transformDepth(texture2DGradEXT(uDepthSampler, texcoord + currOffset, dx, dy).r);
         if (currSampledHeight < currRayHeight) {
-            float coneRatioSqrt = texture2DGradEXT(uNormalSampler, texcoord + currOffset, dx, dy).r;
+            float coneRatioSqrt = texture2DGradEXT(uNormalSampler, texcoord + currOffset, dx, dy).g;
             float coneRatio = coneRatioSqrt * coneRatioSqrt;
             float stepRatio = (currRayHeight - currSampledHeight) / (iz / coneRatio - z);
 
