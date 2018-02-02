@@ -168,11 +168,11 @@ vec2 getCorrectedTexcoordsConeMap() {
 
             prevRayHeight = currRayHeight;
             currRayHeight -= minStep;
-            currRayHeight -= z * stepRatio;
+            currRayHeight -= stepRatio * z;
 
             prevOffset = currOffset;
             currOffset += minStep * maxOffset;
-            currOffset += eye.xy * stepRatio;
+            currOffset += stepRatio * (maxOffset * z);
 
             prevSampledHeight = currSampledHeight;
         } else {
@@ -191,9 +191,7 @@ vec2 getCorrectedTexcoordsConeMap() {
 void main() {
 //    vec2 correctedTexcoords = getCorrectedTexcoords();
     vec2 correctedTexcoords = getCorrectedTexcoordsConeMap();
-//    vec4 color = vec4(vNormal, 1.0);
     vec4 color = texture2D(uColorSampler, correctedTexcoords);
     vec3 normal = mapNormal(correctedTexcoords);
-//    vec3 normal = normalize(col2vec(texture2D(uNormalSampler, correctedTexcoords).xyz));
     gl_FragColor = vec4(getLightAmbient(color.rgb) + getLightDirectional(normal, color.rgb), 1.0);
 }
