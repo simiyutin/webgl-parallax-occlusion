@@ -5,7 +5,8 @@ class Geometry {
         this.mvLightMatrix = mat4.create();
         this.pLightMatrix = mat4.create();
         this.camTranslationMatrix = mat4.create(
-            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -1.3476160764694214, 8.654886245727539, 23.817583084106445, 1]);
+            [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, -0.4404011368751526, 3.560636281967163, 13.12432861328125, 1]
+        );
         // mat4.identity(this.camTranslationMatrix);
         this.camRotationMatrix = mat4.create();
         this.far = 100;
