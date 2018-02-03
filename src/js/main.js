@@ -6,6 +6,7 @@ let deferredRenderer;
 let forwardRenderer;
 let parallaxRenderer;
 let renderLayer;
+let fpsMeter;
 
 function initBuffers(model) {
     model.vertexBuffer = gl.createBuffer();
@@ -161,6 +162,9 @@ function handleRendererChange(radioButton) {
 }
 
 function tick() {
+    fpsMeter.invoke();
+    const fps = fpsMeter.getFps();
+    document.getElementById("fps-rate").innerHTML = fps;
     // -> renderer.render();
     renderer.renderFrame(env, geometry, renderLayer);
     // env.animate();
@@ -180,6 +184,7 @@ function webGLStart() {
     forwardRenderer = new ForwardRenderingStrategy(gl);
     parallaxRenderer = new ParallaxRenderingStrategy(gl);
     renderer = parallaxRenderer;
+    fpsMeter = new FpsMeter();
 
     renderLayer = 0;
 

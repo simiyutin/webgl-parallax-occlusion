@@ -72,6 +72,7 @@
         </style>
 
         <script type="text/javascript" src="../lib/glMatrix-0.9.5.min.js"></script>
+        <script src="js/fpsMeter.js"></script>
         <script src="js/models.js"></script>
         <script src="js/glUtils.js"></script>
         <script src="js/environment.js"></script>
@@ -113,6 +114,11 @@
                         <input type="radio" name="choice" onclick="handleRendererChange(this);" value="1"> Forward render
                     </form>
                 </div>
+            </div>
+
+            <div>
+                <span>FPS:</span>
+                <span id="fps-rate">0</span>
             </div>
 
 
