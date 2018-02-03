@@ -7,7 +7,7 @@ uniform vec3 uAmbientColor;
 uniform vec3 uSpecularColor;
 uniform sampler2D uColorSampler;
 uniform sampler2D uDepthSampler;
-uniform sampler2D uNormalSampler;
+uniform sampler2D uConeSampler;
 uniform int uParallaxMode;
 
 varying vec2 vTexcoord;
@@ -163,7 +163,7 @@ vec2 getCorrectedTexcoordsConeMap() {
         }
         currSampledHeight = transformDepth(texture2DGradEXT(uDepthSampler, texcoord + currOffset, dx, dy).r);
         if (currSampledHeight < currRayHeight) {
-            float coneRatioSqrt = texture2DGradEXT(uNormalSampler, texcoord + currOffset, dx, dy).g;
+            float coneRatioSqrt = texture2DGradEXT(uConeSampler, texcoord + currOffset, dx, dy).g;
             float coneRatio = coneRatioSqrt * coneRatioSqrt;
             float stepRatio = (currRayHeight - currSampledHeight) / (iz / coneRatio - z);
 
