@@ -2,11 +2,8 @@ let gl;
 let geometry;
 let env;
 let renderer;
-let deferredRenderer;
-let forwardRenderer;
-let parallaxRenderer;
-let renderLayer;
 let fpsMeter;
+let parallaxMappingMode;
 
 function initBuffers(model) {
     model.vertexBuffer = gl.createBuffer();
@@ -136,29 +133,13 @@ function initHandlers() {
     };
 
 
-    const sliderNumLights = document.getElementById("lightsRange");
-    const outputNumLights = document.getElementById("lightsValue");
-    sliderNumLights.value = env.getLightsNum();
-    outputNumLights.innerHTML = sliderNumLights.value;
-
-    sliderNumLights.oninput = function() {
-        outputNumLights.innerHTML = this.value;
-        env.setLightNum(this.value);
-        renderer.renderFrame(env, geometry, renderLayer);
-    };
-
-
     document.getElementById("fractal-canvas").addEventListener('wheel', function(e) {
         geometry.translateCamera([0, 0, e.deltaY / 16]);
     });
 }
 
-function handleLayerChange(radioButton) {
-    renderLayer = Number.parseInt(radioButton.value);
-}
-
-function handleRendererChange(radioButton) {
-    renderer = Number.parseInt(radioButton.value) === 0 ? deferredRenderer : forwardRenderer;
+function handleParallaxMappingChange(radioButton) {
+    parallaxMappingMode = Number.parseInt(radioButton.value);
 }
 
 function tick() {
@@ -166,7 +147,7 @@ function tick() {
     const fps = fpsMeter.getFps();
     document.getElementById("fps-rate").innerHTML = fps;
     // -> renderer.render();
-    renderer.renderFrame(env, geometry, renderLayer);
+    renderer.renderFrame(env, geometry, parallaxMappingMode);
     // env.animate();
     env.animateModels();
     requestAnimationFrame(tick);
@@ -180,13 +161,10 @@ function webGLStart() {
     gl = initGL();
     geometry = loadGeometry();
     env = loadEnvironment();
-    deferredRenderer = new DeferredRenderingStrategy(gl);
-    forwardRenderer = new ForwardRenderingStrategy(gl);
-    parallaxRenderer = new ParallaxRenderingStrategy(gl);
-    renderer = parallaxRenderer;
+    renderer = new ParallaxRenderingStrategy(gl);
     fpsMeter = new FpsMeter();
 
-    renderLayer = 0;
+    parallaxMappingMode = 0;
 
     // не зависит от способа рендера
     env.getModels().forEach(initBuffers);

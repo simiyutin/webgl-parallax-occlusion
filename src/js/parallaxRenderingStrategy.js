@@ -13,14 +13,14 @@ class ParallaxRenderingStrategy {
     }
 
     // region interface
-    renderFrame(env, geometry) {
-        this.drawScene(env, geometry);
+    renderFrame(env, geometry, parallaxMode) {
+        this.drawScene(env, geometry, parallaxMode);
     }
     // endregion
 
     // region private
 
-    drawScene(env, geometry) {
+    drawScene(env, geometry, parallaxMode) {
         const models = env.getModels();
         const gl = this.gl;
         const mainProgram = this.mainProgram;
@@ -95,6 +95,9 @@ class ParallaxRenderingStrategy {
             gl.activeTexture(gl.TEXTURE2);
             gl.bindTexture(gl.TEXTURE_2D, normalsTexture);
             gl.uniform1i(mainProgram.uNormalSampler, 2);
+
+            gl.uniform1i(mainProgram.uParallaxMode, parallaxMode);
+
 
             // render
             gl.drawArrays(gl.TRIANGLES, 0, model.vertexBuffer.numItems);
@@ -171,6 +174,7 @@ class ParallaxRenderingStrategy {
         program.uColorSampler = gl.getUniformLocation(program, "uColorSampler");
         program.uDepthSampler = gl.getUniformLocation(program, "uDepthSampler");
         program.uNormalSampler = gl.getUniformLocation(program, "uNormalSampler");
+        program.uParallaxMode = gl.getUniformLocation(program, "uParallaxMode");
     }
 
     // initProperties_gBuffer(program) {

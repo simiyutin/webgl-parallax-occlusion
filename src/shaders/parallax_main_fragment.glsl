@@ -8,6 +8,7 @@ uniform vec3 uSpecularColor;
 uniform sampler2D uColorSampler;
 uniform sampler2D uDepthSampler;
 uniform sampler2D uNormalSampler;
+uniform int uParallaxMode;
 
 varying vec2 vTexcoord;
 varying vec3 vPosition;
@@ -189,8 +190,12 @@ vec2 getCorrectedTexcoordsConeMap() {
 }
 
 void main() {
-//    vec2 correctedTexcoords = getCorrectedTexcoords();
-    vec2 correctedTexcoords = getCorrectedTexcoordsConeMap();
+    vec2 correctedTexcoords;
+    if (uParallaxMode == 0) {
+        correctedTexcoords = getCorrectedTexcoords();
+    } else {
+        correctedTexcoords = getCorrectedTexcoordsConeMap();
+    }
     vec4 color = texture2D(uColorSampler, correctedTexcoords);
     vec3 normal = mapNormal(correctedTexcoords);
     gl_FragColor = vec4(getLightAmbient(color.rgb) + getLightDirectional(normal, color.rgb), 1.0);

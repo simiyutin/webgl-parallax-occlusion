@@ -87,31 +87,14 @@
 
     <body onload="webGLStart();">
         <div id="slidecontainer" class="noselect">
-            <input type="range" min="0" max="256" value="128" class="slider" id="lightsRange">
-            <p>Number of lights: <span id="lightsValue"></span></p>
+
 
             <div>
-                <div>Layer:</div>
-                <div style="margin-bottom: 10px;">
-                    <form >
-                        <div>
-                            <input type="radio" name="choice" onclick="handleLayerChange(this);" value="0" checked="checked"> Combined
-                            <input type="radio" name="choice" onclick="handleLayerChange(this);" value="1"> Color map
-                        </div>
-                        <div>
-                            <input type="radio" name="choice" onclick="handleLayerChange(this);" value="2"> Position map
-                            <input type="radio" name="choice" onclick="handleLayerChange(this);" value="3"> Normal map
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div>
-                <div>Render strategy:</div>
+                <div>Parallax occlusion mode:</div>
                 <div>
                     <form >
-                        <input type="radio" name="choice" onclick="handleRendererChange(this);" value="0" checked="checked"> Deferred render
-                        <input type="radio" name="choice" onclick="handleRendererChange(this);" value="1"> Forward render
+                        <input type="radio" name="choice" onclick="handleParallaxMappingChange(this);" value="0" checked="checked"> Equal steps
+                        <input type="radio" name="choice" onclick="handleParallaxMappingChange(this);" value="1"> Cone map
                     </form>
                 </div>
             </div>
