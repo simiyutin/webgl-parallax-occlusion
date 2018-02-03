@@ -80,7 +80,7 @@ vec2 getCorrectedTexcoords() {
 
     const float heightScale = 0.1;
     const float maxSamples = 256.0;
-    const float minSamples = 256.0;
+    const float minSamples = 64.0;
 
     float z = abs(eye.z);
     float iz = sqrt(1.0 - z * z);
@@ -134,7 +134,7 @@ vec2 getCorrectedTexcoordsConeMap() {
 
     const float heightScale = 0.1;
     const float maxSamples = 256.0;
-    const float minSamples = 256.0;
+    const float minSamples = 64.0;
 
     float z = abs(eye.z);
     float iz = sqrt(1.0 - z * z);
